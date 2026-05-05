@@ -1,0 +1,30 @@
+﻿<header class="header">
+    <div class="header__left">
+        <img src="./assets/logos/bayou_logo.png" alt="Bayou Travel" class="header__logo">
+    </div>
+    <div class="header__right">
+        <div class="lang-selector" id="lang-selector">
+            <button class="lang-selector__btn" id="btn-lang">
+                <img src="https://flagcdn.com/w20/vn.png" alt="VN" class="lang-selector__flag" id="current-lang-flag">
+                <span id="current-lang-text">VN</span>
+                <svg class="lang-selector__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="lang-selector__dropdown" id="lang-dropdown">
+                <div class="lang-selector__title" data-i18n="lang_title">Ngôn ngữ</div>
+                <div class="lang-selector__option lang-selector__option--active" data-lang="VN">
+                    <img src="https://flagcdn.com/w20/vn.png" alt="VN" class="lang-selector__flag">
+                    <span>Tiếng Việt</span>
+                    <svg class="lang-selector__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+                <div class="lang-selector__option" data-lang="EN">
+                    <img src="https://flagcdn.com/w20/us.png" alt="EN" class="lang-selector__flag">
+                    <span>English</span>
+                    <svg class="lang-selector__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+            </div>
+        </div>
+        <button class="header__btn header__btn--exchange" id="btn-exchange">Tỷ giá: Đang cập nhật...</button>
+        <button class="header__btn header__btn--booking" id="btn-booking" data-i18n="btn_booking">Tìm kiếm đặt chỗ</button>
+        <button class="header__btn header__btn--login" id="btn-login" data-i18n="btn_login">👤 Đăng nhập</button>
+    </div>
+</header>

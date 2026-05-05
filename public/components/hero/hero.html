@@ -1,0 +1,225 @@
+<section class="hero">
+    <div class="hero-slider">
+        <!-- 1. Bali - Biển nhiệt đới -->
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=90&auto=format');"></div>
+        <!-- 2. Paris - Tháp Eiffel -->
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1920&q=90&auto=format');"></div>
+        <!-- 3. Tokyo - Nhật Bản -->
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1920&q=90&auto=format');"></div>
+        <!-- 4. Vịnh Hạ Long - Việt Nam -->
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1528127269322-539801943592?w=1920&q=90&auto=format');"></div>
+        <!-- 5. Santorini - Hy Lạp -->
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1920&q=90&auto=format');"></div>
+    </div>
+    <div class="slider-dots"></div>
+    <div class="search-widget">
+        <div class="search-widget__row search-widget__row--top">
+            <div class="search-widget__tabs">
+                <button class="search-widget__tab search-widget__tab--active" data-trip="roundtrip">Khứ hồi</button>
+                <button class="search-widget__tab" data-trip="oneway">1 chiều</button>
+                <button class="search-widget__tab" data-trip="multicity">Đa chặng</button>
+            </div>
+            <div class="search-widget__options">
+                <!-- Hạng ghế -->
+                <div class="custom-dropdown" id="dropdown-seat">
+                    <button type="button" class="custom-dropdown__toggle" id="btn-seat">💺 Phổ thông <span class="arrow">▼</span></button>
+                    <div class="custom-dropdown__menu" id="menu-seat">
+                        <div class="custom-dropdown__item">Tất cả hạng ghế</div>
+                        <div class="custom-dropdown__item custom-dropdown__item--active">Phổ thông <span class="dot"></span></div>
+                        <div class="custom-dropdown__item">Phổ thông đặc biệt</div>
+                        <div class="custom-dropdown__item">Thương gia</div>
+                        <div class="custom-dropdown__item">Hạng nhất</div>
+                    </div>
+                </div>
+                
+                <!-- Hành khách -->
+                <div class="custom-dropdown" id="dropdown-passenger">
+                    <button type="button" class="custom-dropdown__toggle" id="btn-passenger">👥 1 Hành khách <span class="arrow">▼</span></button>
+                    <div class="custom-dropdown__menu custom-dropdown__menu--passenger" id="menu-passenger">
+                        <div class="passenger-row">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <div class="passenger-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005bc5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                </div>
+                                <div class="passenger-info">
+                                    <strong>Người lớn</strong>
+                                    <span>(từ 12 tuổi)</span>
+                                </div>
+                            </div>
+                            <div class="passenger-controls">
+                                <button type="button" class="passenger-btn minus" data-type="adult">-</button>
+                                <span class="passenger-count" id="count-adult">1</span>
+                                <button type="button" class="passenger-btn plus" data-type="adult">+</button>
+                            </div>
+                        </div>
+                        <div class="passenger-row">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <div class="passenger-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005bc5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21v-2a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v2"></path><circle cx="12" cy="9" r="3"></circle></svg>
+                                </div>
+                                <div class="passenger-info">
+                                    <strong>Trẻ em</strong>
+                                    <span>(Từ 2 - 12 tuổi)</span>
+                                </div>
+                            </div>
+                            <div class="passenger-controls">
+                                <button type="button" class="passenger-btn minus" data-type="child">-</button>
+                                <span class="passenger-count" id="count-child">0</span>
+                                <button type="button" class="passenger-btn plus" data-type="child">+</button>
+                            </div>
+                        </div>
+                        <div class="passenger-row">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <div class="passenger-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005bc5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="19" r="2"></circle><circle cx="17" cy="19" r="2"></circle><path d="M5 19h14"></path><path d="M3 11a8 8 0 0 1 16 0v5H3v-5z"></path><path d="M19 11l3-2"></path></svg>
+                                </div>
+                                <div class="passenger-info">
+                                    <strong>Trẻ sơ sinh</strong>
+                                    <span>(Dưới 2 tuổi)</span>
+                                </div>
+                            </div>
+                            <div class="passenger-controls">
+                                <button type="button" class="passenger-btn minus" data-type="infant">-</button>
+                                <span class="passenger-count" id="count-infant">0</span>
+                                <button type="button" class="passenger-btn plus" data-type="infant">+</button>
+                            </div>
+                        </div>
+                        <div class="passenger-action">
+                            <button type="button" class="btn-confirm-passenger" id="btn-passenger-confirm">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <form class="search-widget__form" id="flight-search-form">
+            <div class="search-widget__input-group" style="position: relative;">
+                <label class="search-widget__label">Điểm đi</label>
+                <input type="text" class="search-widget__input" id="input-from" placeholder="Thành phố hoặc sân bay" autocomplete="off">
+                <!-- Popup Điểm đi -->
+                <div class="location-popup" id="popup-from">
+                    <div class="location-popup__tabs">
+                        <button type="button" class="location-popup__tab location-popup__tab--active">NỘI ĐỊA</button>
+                        <button type="button" class="location-popup__tab">MỸ - CANADA</button>
+                        <button type="button" class="location-popup__tab">CHÂU ÂU</button>
+                        <button type="button" class="location-popup__tab">CHÂU ÚC</button>
+                        <button type="button" class="location-popup__tab">CHÂU Á</button>
+                    </div>
+                    <div class="location-popup__content">
+                        <h4 class="location-popup__country"><u>Việt Nam</u></h4>
+                        <div class="location-popup__grid">
+                            <div class="location-popup__item">TP HCM (SGN)</div>
+                            <div class="location-popup__item">Hà Nội (HAN)</div>
+                            <div class="location-popup__item">Nha Trang (CXR)</div>
+                            <div class="location-popup__item">Đà Nẵng (DAD)</div>
+                            <div class="location-popup__item">Phú Quốc (PQC)</div>
+                            <div class="location-popup__item">Cần Thơ (VCA)</div>
+                            <div class="location-popup__item">Đà Lạt (DLI)</div>
+                            <div class="location-popup__item">Hải Phòng (HPH)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="search-widget__swap-btn" id="btn-swap">⇄</button>
+            <div class="search-widget__input-group" style="position: relative;">
+                <label class="search-widget__label">Điểm đến</label>
+                <input type="text" class="search-widget__input" id="input-to" placeholder="Thành phố hoặc sân bay" autocomplete="off">
+                <!-- Popup Điểm đến -->
+                <div class="location-popup" id="popup-to">
+                    <div class="location-popup__tabs">
+                        <button type="button" class="location-popup__tab location-popup__tab--active">NỘI ĐỊA</button>
+                        <button type="button" class="location-popup__tab">MỸ - CANADA</button>
+                        <button type="button" class="location-popup__tab">CHÂU ÂU</button>
+                        <button type="button" class="location-popup__tab">CHÂU ÚC</button>
+                        <button type="button" class="location-popup__tab">CHÂU Á</button>
+                    </div>
+                    <div class="location-popup__content">
+                        <h4 class="location-popup__country"><u>Việt Nam</u></h4>
+                        <div class="location-popup__grid">
+                            <div class="location-popup__item">TP HCM (SGN)</div>
+                            <div class="location-popup__item">Hà Nội (HAN)</div>
+                            <div class="location-popup__item">Nha Trang (CXR)</div>
+                            <div class="location-popup__item">Đà Nẵng (DAD)</div>
+                            <div class="location-popup__item">Phú Quốc (PQC)</div>
+                            <div class="location-popup__item">Cần Thơ (VCA)</div>
+                            <div class="location-popup__item">Đà Lạt (DLI)</div>
+                            <div class="location-popup__item">Hải Phòng (HPH)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="search-widget__input-group" style="position: relative;">
+                <label class="search-widget__label">Ngày đi</label>
+                <input type="text" class="search-widget__input" id="input-depart" placeholder="dd/mm/yyyy" readonly autocomplete="off" style="cursor: pointer;">
+                
+                <!-- Custom Calendar Popup -->
+                <div class="custom-calendar-popup" id="calendar-popup">
+                    <div class="calendar-wrapper">
+                        <div class="calendar-month" id="calendar-left"></div>
+                        <div class="calendar-month" id="calendar-right"></div>
+                    </div>
+                    <div class="calendar-footer">
+                        <button type="button" class="btn-confirm-calendar" id="btn-calendar-confirm">Đồng ý</button>
+                    </div>
+                </div>
+            </div>
+            <div class="search-widget__input-group" id="return-date-group">
+                <label class="search-widget__label">Ngày về</label>
+                <input type="text" class="search-widget__input" id="input-return" placeholder="dd/mm/yyyy" readonly autocomplete="off" style="cursor: pointer;">
+            </div>
+            <button type="submit" class="search-widget__submit-btn">🔍</button>
+        </form>
+
+        <!-- MULTI-CITY FORM (Hidden by default) -->
+        <form class="search-widget__multicity" id="multicity-form" style="display: none;">
+            <div class="multicity-flight">
+                <div class="multicity-flight-header">CHUYẾN BAY 1</div>
+                <div class="multicity-row">
+                    <div class="search-widget__input-group" style="position: relative;">
+                        <label class="search-widget__label">Điểm đi</label>
+                        <input type="text" class="search-widget__input m-from" placeholder="Thành phố hoặc sân bay" autocomplete="off">
+                    </div>
+                    <button type="button" class="search-widget__swap-btn m-swap">⇄</button>
+                    <div class="search-widget__input-group" style="position: relative;">
+                        <label class="search-widget__label">Điểm đến</label>
+                        <input type="text" class="search-widget__input m-to" placeholder="Thành phố hoặc sân bay" autocomplete="off">
+                    </div>
+                    <div class="search-widget__input-group multicity-date-group" style="position: relative;">
+                        <label class="search-widget__label">Ngày đi</label>
+                        <input type="text" class="search-widget__input m-date" placeholder="dd/mm/yyyy" readonly autocomplete="off" style="cursor: pointer;">
+                    </div>
+                    <button type="button" class="btn-remove-flight" style="visibility: hidden; padding: 0 15px;"></button>
+                </div>
+            </div>
+            
+            <div class="multicity-flight" style="margin-top: 15px;">
+                <div class="multicity-flight-header">CHUYẾN BAY 2</div>
+                <div class="multicity-row">
+                    <div class="search-widget__input-group" style="position: relative;">
+                        <label class="search-widget__label">Điểm đi</label>
+                        <input type="text" class="search-widget__input m-from" placeholder="Thành phố hoặc sân bay" autocomplete="off">
+                    </div>
+                    <button type="button" class="search-widget__swap-btn m-swap">⇄</button>
+                    <div class="search-widget__input-group" style="position: relative;">
+                        <label class="search-widget__label">Điểm đến</label>
+                        <input type="text" class="search-widget__input m-to" placeholder="Thành phố hoặc sân bay" autocomplete="off">
+                    </div>
+                    <div class="search-widget__input-group multicity-date-group" style="position: relative;">
+                        <label class="search-widget__label">Ngày đi</label>
+                        <input type="text" class="search-widget__input m-date" placeholder="dd/mm/yyyy" readonly autocomplete="off" style="cursor: pointer;">
+                    </div>
+                    <button type="button" class="btn-remove-flight" style="visibility: hidden; padding: 0 15px;"></button>
+                </div>
+            </div>
+            
+            <div class="multicity-actions">
+                <button type="button" class="btn-add-flight" style="background: transparent; color: #00aaff; border: none; font-weight: bold; cursor: pointer; font-size: 14px;">+ Thêm chuyến bay</button>
+                <button type="submit" class="btn-confirm-passenger" style="width: 150px;">Tìm chuyến bay</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="hero__contact">
+        <img src="./assets/logos/0_1.png" alt="Bayou Contact" class="hero__contact-img">
+    </div>
+</section>

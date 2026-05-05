@@ -1,0 +1,3 @@
+# Storage Directory
+Thư mục này chứa dữ liệu sinh ra trong quá trình chạy.
+Các file trong đây không được commit lên Git.

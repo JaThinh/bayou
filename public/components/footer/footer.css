@@ -1,0 +1,295 @@
+/* ==========================================
+   1. CONNECT BANNER
+   ========================================== */
+.connect-banner-wrapper {
+    width: 100%;
+    padding: 40px 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.connect-banner {
+    background-color: #6a8cff; /* Light blue matching screenshot */
+    border-radius: 12px;
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Ensure image respects border radius if needed */
+}
+
+.connect-banner__img {
+    height: auto;
+    width: 100%;
+    max-width: 800px; /* Make it significantly bigger */
+    display: block;
+}
+
+/* ==========================================
+   2. SITE FOOTER
+   ========================================== */
+.site-footer {
+    background-color: #ffffff;
+    border-top: 1px solid #eeeeee;
+}
+
+.site-footer__top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.site-footer__info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.contact__logos {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.site-footer__logo {
+    max-width: 150px;
+}
+
+.site-footer__bct {
+    height: 45px;
+    width: auto;
+}
+
+.site-footer__title {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.site-footer__company-name {
+    margin-top: 5px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.site-footer__details {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+.contact-link {
+    color: #005bc5;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.contact-link:hover {
+    text-decoration: underline;
+}
+
+.site-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.site-footer__links a {
+    color: #005bc5;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.site-footer__links a:hover {
+    text-decoration: underline;
+}
+
+.site-footer__map {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.site-footer__map iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.site-footer__banks {
+    border-top: 1px solid #eeeeee;
+    padding-top: 30px;
+}
+
+.site-footer__banks-title {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.site-footer__banks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.bank-item {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    border-left: 4px solid #005bc5;
+}
+
+.site-footer__bottom {
+    border-top: 1px solid #eeeeee;
+    background-color: #f8f9fa;
+    padding: 15px 0;
+}
+
+.site-footer__bottom-container {
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #666;
+}
+
+.social-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    background-color: #005bc5;
+    color: #fff;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 10px;
+    margin-left: 8px;
+    transition: transform 0.2s;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+}
+
+/* ==========================================
+   3. FLOATING WIDGETS
+   ========================================== */
+.floating-widgets {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.widget-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2.5px solid #7ec8f0;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.widget-btn:hover {
+    transform: translateY(-3px) scale(1.08);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+/* Promo Tag */
+.widget-btn--promo {
+    width: auto;
+    border-radius: 20px;
+    padding: 0 14px;
+    background-color: #00bfa5;
+    border-color: #7ee8d8;
+    font-size: 13px;
+    height: 34px;
+    gap: 5px;
+    margin-bottom: 4px;
+}
+
+/* Zalo */
+.widget-btn--zalo {
+    background: linear-gradient(135deg, #0068ff, #00aaff);
+    border-color: #99d4ff;
+}
+
+.widget-btn__text {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+/* Messenger */
+.widget-btn--mess {
+    background: linear-gradient(135deg, #0084ff, #00c6ff);
+    border-color: #99d4ff;
+}
+
+/* Phone */
+.widget-btn--phone {
+    background: linear-gradient(135deg, #0088cc, #00aaff);
+    border-color: #99d4ff;
+}
+
+/* Scroll to Top */
+.widget-btn--scrolltop {
+    background-color: #ffffff;
+    border-color: #cce5ff;
+}
+
+.widget-btn--scrolltop:hover {
+    background-color: #f0f8ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .connect-banner__grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .site-footer__top {
+        grid-template-columns: 1fr;
+    }
+    
+    .site-footer__banks-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .site-footer__bottom-container {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
