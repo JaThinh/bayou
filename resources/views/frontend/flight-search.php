@@ -269,6 +269,10 @@ $totalPassengers = $adults + $children + $infants;
             </aside>
 
             <section class="flight-results__main">
+                <div id="flight-results-notice" class="flight-notice" hidden>
+                    <span class="flight-notice__icon" aria-hidden="true">⚠️</span>
+                    <p class="flight-notice__text" id="flight-results-notice-text"></p>
+                </div>
                 <div class="flight-results__summary" id="flight-results-summary"></div>
                 <div class="flight-results__list" id="flight-results-list"></div>
                 <template id="flight-card-template">

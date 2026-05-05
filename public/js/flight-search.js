@@ -147,11 +147,30 @@ function renderResults(payload) {
     const listEl = document.getElementById('flight-results-list');
     const emptyEl = document.getElementById('flight-results-empty');
     const errorEl = document.getElementById('flight-results-error');
+    const noticeEl = document.getElementById('flight-results-notice');
+    const noticeTextEl = document.getElementById('flight-results-notice-text');
     const tpl = document.getElementById('flight-card-template');
 
     listEl.innerHTML = '';
     emptyEl.hidden = true;
     errorEl.hidden = true;
+
+    // Banner cảnh báo khi nhà cung cấp gặp sự cố và đang dùng dữ liệu fallback.
+    if (noticeEl && noticeTextEl) {
+        if (payload.fallback_kind === 'upstream_error') {
+            noticeEl.hidden = false;
+            noticeEl.classList.add('flight-notice--warning');
+            noticeTextEl.textContent = payload.fallback_message
+                || 'Hệ thống đặt vé đang gặp sự cố tạm thời. Đây là kết quả tham khảo.';
+        } else if (payload.fallback_kind === 'no_provider') {
+            noticeEl.hidden = false;
+            noticeEl.classList.remove('flight-notice--warning');
+            noticeTextEl.textContent = payload.fallback_message
+                || 'Đang hiển thị dữ liệu mẫu để minh hoạ giao diện.';
+        } else {
+            noticeEl.hidden = true;
+        }
+    }
 
     const flights = Array.isArray(payload.flights) ? payload.flights.slice() : [];
 

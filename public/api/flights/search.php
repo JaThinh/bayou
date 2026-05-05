@@ -122,22 +122,39 @@ $request = [
 $rapidApiKey = getRapidApiKey();
 $apiResult = null;
 $apiError = null;
+$attempts = 0;
 
+// Skyscanner RapidAPI thường gặp lỗi 502 thoáng qua. Thử lại tối đa 2 lần
+// với độ trễ ngắn để hấp thụ những cú nhỡ tạm thời trước khi fallback.
 if ($rapidApiKey !== '' && $originEntityId !== '' && $destinationEntityId !== '') {
-    try {
-        $apiResult = callSkyscanner(
-            $rapidApiKey,
-            $origin,
-            $originEntityId,
-            $destination,
-            $destinationEntityId,
-            $date,
-            $adults,
-            $currency,
-            $market
-        );
-    } catch (\Throwable $e) {
-        $apiError = $e->getMessage();
+    $maxAttempts = 3;
+    while ($attempts < $maxAttempts && $apiResult === null) {
+        $attempts++;
+        try {
+            $apiResult = callSkyscanner(
+                $rapidApiKey,
+                $origin,
+                $originEntityId,
+                $destination,
+                $destinationEntityId,
+                $date,
+                $adults,
+                $currency,
+                $market
+            );
+            $apiError = null;
+        } catch (\Throwable $e) {
+            $apiError = $e->getMessage();
+            $isTransient = stripos($apiError, '502') !== false
+                || stripos($apiError, '503') !== false
+                || stripos($apiError, '504') !== false
+                || stripos($apiError, 'timeout') !== false
+                || stripos($apiError, 'cURL error') !== false;
+            if (!$isTransient || $attempts >= $maxAttempts) {
+                break;
+            }
+            usleep(800000); // 0.8s rồi thử lại
+        }
     }
 }
 
@@ -145,6 +162,7 @@ if (is_array($apiResult) && !empty($apiResult)) {
     echo json_encode([
         'success' => true,
         'source' => 'Skyscanner via RapidAPI',
+        'attempts' => $attempts,
         'request' => $request,
         'flights' => $apiResult,
     ], JSON_UNESCAPED_UNICODE);
@@ -152,11 +170,19 @@ if (is_array($apiResult) && !empty($apiResult)) {
 }
 
 // Fallback: trả về dữ liệu mẫu để giao diện vẫn hiển thị được khi không có API key
-// hoặc khi nhà cung cấp gặp sự cố.
+// hoặc khi nhà cung cấp gặp sự cố. Phân loại lý do để frontend hiển thị banner phù hợp.
+$fallbackReason = $apiError ?? 'No upstream provider available';
+$isUpstreamFailure = $apiError !== null;
+
 echo json_encode([
     'success' => true,
     'source' => 'Bayou Mock Data',
-    'fallback_reason' => $apiError ?? 'No upstream provider available',
+    'fallback_reason' => $fallbackReason,
+    'fallback_kind' => $isUpstreamFailure ? 'upstream_error' : 'no_provider',
+    'fallback_message' => $isUpstreamFailure
+        ? 'Hệ thống đặt vé đang gặp sự cố tạm thời. Đây là kết quả tham khảo, giá có thể thay đổi.'
+        : 'Đang hiển thị dữ liệu mẫu do chưa cấu hình API thực tế.',
+    'attempts' => $attempts,
     'request' => $request,
     'flights' => buildMockFlights($origin, $destination, $date),
 ], JSON_UNESCAPED_UNICODE);

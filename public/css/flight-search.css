@@ -609,6 +609,38 @@ body.flight-search-page {
     font-weight: 600;
 }
 
+/* Banner thông báo khi dùng dữ liệu fallback / nhà cung cấp lỗi. */
+.flight-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #eef5ff;
+    border: 1px solid #b9d8ff;
+    color: #074a8a;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.flight-notice__icon {
+    font-size: 18px;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.flight-notice__text {
+    margin: 0;
+    flex: 1;
+}
+
+.flight-notice--warning {
+    background: #fff7e6;
+    border-color: #ffd591;
+    color: #ad4e00;
+}
+
 /* ==========================================
    RESPONSIVE
    ========================================== */
