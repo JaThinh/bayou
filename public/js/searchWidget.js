@@ -691,11 +691,41 @@ export function initSearchWidget() {
         }
 
         console.log("✈️ Flight Search Data (Giao diện):", searchData);
-        
-        // Gọi API Backend cho các chuyến bay (Khứ hồi hoặc Đa chặng sẽ gọi nhiều lần)
-        if (searchData.flights.length > 0) {
-            await searchFlights(searchData.flights);
+
+        if (searchData.flights.length === 0) return;
+
+        // Async flow: redirect sang trang kết quả /flight-search.php.
+        // Trang đó sẽ hiển thị skeleton loader + tự fetch API qua AJAX.
+        const extractCode = (str) => {
+            const match = String(str || '').match(/\(([^)]+)\)/);
+            return match ? match[1] : String(str || '').trim();
+        };
+
+        const toIsoDate = (dateStr) => {
+            if (!dateStr) return '';
+            // Form sử dụng định dạng dd/mm/yyyy, API yêu cầu YYYY-MM-DD.
+            const m = String(dateStr).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+            return dateStr;
+        };
+
+        const firstLeg = searchData.flights[0];
+        const queryParams = new URLSearchParams({
+            from: extractCode(firstLeg.from),
+            to: extractCode(firstLeg.to),
+            date: toIsoDate(firstLeg.date),
+            tripType: searchData.tripType,
+            adults: String(passengers.adult || 1),
+            children: String(passengers.child || 0),
+            infants: String(passengers.infant || 0),
+            seatClass: searchData.seatClassName,
+        });
+
+        if (searchData.tripType !== 'oneway' && searchData.flights[1]) {
+            queryParams.set('returnDate', toIsoDate(searchData.flights[1].date));
         }
+
+        window.location.href = `/flight-search.php?${queryParams.toString()}`;
     };
 
     const mainForm = document.getElementById('flight-search-form');
