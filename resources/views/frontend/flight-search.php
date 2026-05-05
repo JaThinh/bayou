@@ -241,87 +241,255 @@ $totalPassengers = $adults + $children + $infants;
              KẾT QUẢ THẬT (mặc định ẨN, JS sẽ fade-in)
              ======================================== -->
         <div id="flight-results" class="flight-results" hidden>
-            <aside class="flight-results__sidebar" id="flight-filters">
-                <div class="filter-card">
-                    <h4 class="filter-card__title">Bộ lọc</h4>
-                    <div class="filter-card__group">
-                        <label class="filter-card__label">Hãng hàng không</label>
-                        <div id="filter-airlines" class="filter-card__options"></div>
-                    </div>
-                    <div class="filter-card__group">
-                        <label class="filter-card__label">Số điểm dừng</label>
-                        <div class="filter-card__options">
-                            <label><input type="radio" name="stops" value="all" checked> Tất cả</label>
-                            <label><input type="radio" name="stops" value="0"> Bay thẳng</label>
-                            <label><input type="radio" name="stops" value="1"> 1 điểm dừng</label>
-                        </div>
-                    </div>
-                    <div class="filter-card__group">
-                        <label class="filter-card__label">Sắp xếp theo</label>
-                        <select id="sort-flights" class="filter-card__select">
-                            <option value="price-asc">Giá: Thấp → Cao</option>
-                            <option value="price-desc">Giá: Cao → Thấp</option>
-                            <option value="depart-asc">Giờ đi: Sớm nhất</option>
-                            <option value="duration-asc">Thời gian bay ngắn nhất</option>
-                        </select>
-                    </div>
-                </div>
-            </aside>
+            <!-- Search summary bar - các pills tóm tắt yêu cầu tìm + nút sửa nhanh -->
+            <div class="search-summary" id="search-summary">
+                <button type="button" class="search-summary__pill" data-edit="route">
+                    <span class="search-summary__icon" aria-hidden="true">📍</span>
+                    <span class="search-summary__text">
+                        <strong><?= htmlspecialchars($fromCity) ?> (<?= htmlspecialchars($fromCode) ?>)</strong>
+                        <span class="search-summary__sep">→</span>
+                        <strong><?= htmlspecialchars($toCity) ?> (<?= htmlspecialchars($toCode) ?>)</strong>
+                    </span>
+                </button>
+                <button type="button" class="search-summary__pill" data-edit="date">
+                    <span class="search-summary__icon" aria-hidden="true">📅</span>
+                    <span class="search-summary__text">
+                        <?= htmlspecialchars($displayDate) ?>
+                        <?php if ($displayReturnDate !== ''): ?>
+                            <span class="search-summary__sep">→</span> <?= htmlspecialchars($displayReturnDate) ?>
+                        <?php endif; ?>
+                    </span>
+                </button>
+                <button type="button" class="search-summary__pill" data-edit="passengers">
+                    <span class="search-summary__icon" aria-hidden="true">👤</span>
+                    <span class="search-summary__text">
+                        <?= (int) $totalPassengers ?> Hành khách
+                    </span>
+                </button>
+                <button type="button" class="search-summary__pill" data-edit="seat-class">
+                    <span class="search-summary__icon" aria-hidden="true">💺</span>
+                    <span class="search-summary__text">
+                        <?= htmlspecialchars($seatClass) ?>
+                    </span>
+                </button>
+                <a class="search-summary__edit" href="/" title="Sửa tìm kiếm" aria-label="Sửa tìm kiếm">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                    </svg>
+                </a>
+            </div>
 
-            <section class="flight-results__main">
-                <div id="flight-results-notice" class="flight-notice" hidden>
-                    <span class="flight-notice__icon" aria-hidden="true">⚠️</span>
-                    <p class="flight-notice__text" id="flight-results-notice-text"></p>
-                </div>
-                <div class="flight-results__summary" id="flight-results-summary"></div>
-                <div class="flight-results__list" id="flight-results-list"></div>
-                <template id="flight-card-template">
-                    <article class="flight-card" data-airline-code="">
-                        <div class="flight-card__airline">
-                            <div class="flight-card__logo-box">
-                                <img class="flight-card__logo" alt="">
+            <div class="results-grid">
+                <aside class="filters" id="flight-filters">
+                    <div class="filters__header">
+                        <h3 class="filters__title">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <line x1="4" y1="6" x2="20" y2="6"></line>
+                                <line x1="7" y1="12" x2="20" y2="12"></line>
+                                <line x1="10" y1="18" x2="20" y2="18"></line>
+                                <circle cx="6" cy="12" r="2"></circle>
+                                <circle cx="9" cy="18" r="2"></circle>
+                                <circle cx="3" cy="6" r="2"></circle>
+                            </svg>
+                            Bộ lọc
+                        </h3>
+                        <button type="button" id="clear-filters-btn" class="filters__clear">Xóa bộ lọc</button>
+                    </div>
+
+                    <!-- Card: Giá vé (dual range slider) -->
+                    <div class="filter-card">
+                        <h4 class="filter-card__title">Giá vé</h4>
+                        <div class="price-slider" id="price-slider">
+                            <div class="price-slider__track">
+                                <div class="price-slider__range" id="price-slider-range"></div>
                             </div>
+                            <input type="range" id="price-slider-min" min="0" max="100" value="0" step="1" aria-label="Giá tối thiểu">
+                            <input type="range" id="price-slider-max" min="0" max="100" value="100" step="1" aria-label="Giá tối đa">
+                        </div>
+                        <div class="price-slider__labels">
                             <div>
-                                <strong class="flight-card__airline-name"></strong>
-                                <span class="flight-card__flight-number"></span>
+                                <span class="price-slider__label">Tối thiểu</span>
+                                <strong id="price-slider-min-display">—</strong>
+                            </div>
+                            <div class="price-slider__labels-right">
+                                <span class="price-slider__label">Tối đa</span>
+                                <strong id="price-slider-max-display">—</strong>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="flight-card__schedule">
-                            <div class="flight-card__time">
-                                <strong class="flight-card__depart-time"></strong>
-                                <span class="flight-card__origin"></span>
-                            </div>
-                            <div class="flight-card__path">
-                                <span class="flight-card__stops"></span>
-                                <div class="flight-card__line"><span>✈</span></div>
-                                <span class="flight-card__duration"></span>
-                            </div>
-                            <div class="flight-card__time">
-                                <strong class="flight-card__arrive-time"></strong>
-                                <span class="flight-card__destination"></span>
-                            </div>
+                    <!-- Card: Hãng hàng không -->
+                    <div class="filter-card">
+                        <h4 class="filter-card__title">Hãng hàng không</h4>
+                        <div id="filter-airlines" class="filter-options"></div>
+                    </div>
+
+                    <!-- Card: Số điểm dừng -->
+                    <div class="filter-card">
+                        <h4 class="filter-card__title">Số điểm dừng</h4>
+                        <div id="filter-stops" class="filter-options">
+                            <label class="filter-option">
+                                <input type="radio" name="stops" value="all" checked>
+                                <span class="filter-option__label">Tất cả</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="stops" value="0">
+                                <span class="filter-option__label">Bay thẳng</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="radio" name="stops" value="1">
+                                <span class="filter-option__label">1 điểm dừng</span>
+                            </label>
                         </div>
+                    </div>
+                </aside>
 
-                        <div class="flight-card__pricing">
-                            <div class="flight-card__price"></div>
-                            <div class="flight-card__price-note">Đã bao gồm thuế phí</div>
-                            <button type="button" class="flight-card__select-btn">Chọn vé</button>
+                <section class="results-main">
+                    <!-- Date carousel: 7 ngày liền kề với giá thấp nhất ước tính -->
+                    <div class="date-carousel" id="date-carousel">
+                        <button type="button" class="date-carousel__nav date-carousel__nav--prev" aria-label="Tuần trước">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <div class="date-carousel__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
                         </div>
-                    </article>
-                </template>
+                        <div class="date-carousel__list" id="date-carousel-list" role="tablist"></div>
+                        <button type="button" class="date-carousel__nav date-carousel__nav--next" aria-label="Tuần sau">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
 
-                <div id="flight-results-empty" class="flight-empty" hidden>
-                    <h3>Không tìm thấy chuyến bay phù hợp.</h3>
-                    <p>Vui lòng thử ngày bay khác hoặc thay đổi điểm đi / điểm đến.</p>
-                </div>
+                    <!-- Banner cảnh báo (hiện khi fallback mock data) -->
+                    <div id="flight-results-notice" class="flight-notice" hidden>
+                        <span class="flight-notice__icon" aria-hidden="true">⚠️</span>
+                        <p class="flight-notice__text" id="flight-results-notice-text"></p>
+                    </div>
 
-                <div id="flight-results-error" class="flight-error" hidden>
-                    <h3>Đã có lỗi xảy ra khi tìm chuyến bay.</h3>
-                    <p id="flight-results-error-message"></p>
-                    <button type="button" id="flight-retry-btn" class="flight-error__btn">Thử lại</button>
-                </div>
-            </section>
+                    <!-- Toolbar: toggle riêng lẻ + sort + reset -->
+                    <div class="results-toolbar">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="separate-flights-toggle">
+                            <span class="toggle-switch__slider"></span>
+                            <span class="toggle-switch__text">Chọn chuyến bay riêng lẻ</span>
+                        </label>
+                        <div class="results-toolbar__right">
+                            <div class="results-toolbar__sort">
+                                <label for="sort-flights" class="results-toolbar__sort-label">Sắp xếp:</label>
+                                <select id="sort-flights" class="results-toolbar__select">
+                                    <option value="price-asc">Giá thấp nhất</option>
+                                    <option value="price-desc">Giá cao nhất</option>
+                                    <option value="depart-asc">Giờ đi: Sớm nhất</option>
+                                    <option value="duration-asc">Thời gian bay ngắn nhất</option>
+                                </select>
+                            </div>
+                            <button type="button" id="reset-toolbar-btn" class="results-toolbar__reset">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="1 4 1 10 7 10"></polyline>
+                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                                </svg>
+                                Cài đặt lại
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section title bar -->
+                    <h2 class="results-section-title">
+                        <span class="results-section-title__plane" aria-hidden="true">✈</span>
+                        Chọn chuyến bay
+                        <span class="results-section-title__route">
+                            <?= htmlspecialchars($fromCity) ?> (<?= htmlspecialchars($fromCode) ?>)
+                            <span class="results-section-title__arrow">→</span>
+                            <?= htmlspecialchars($toCity) ?> (<?= htmlspecialchars($toCode) ?>)
+                        </span>
+                    </h2>
+
+                    <div class="flight-results__summary" id="flight-results-summary"></div>
+                    <div class="flight-results__list" id="flight-results-list"></div>
+
+                    <template id="flight-card-template">
+                        <article class="flight-card" data-airline-code="">
+                            <div class="flight-card__main">
+                                <header class="flight-card__head">
+                                    <div class="flight-card__airline">
+                                        <div class="flight-card__logo-box">
+                                            <img class="flight-card__logo" alt="">
+                                        </div>
+                                        <div class="flight-card__airline-info">
+                                            <strong class="flight-card__airline-name"></strong>
+                                            <span class="flight-card__flight-number"></span>
+                                        </div>
+                                    </div>
+                                    <div class="flight-card__meta">
+                                        <span class="flight-card__aircraft"></span>
+                                        <span class="flight-card__amenities" aria-hidden="true"></span>
+                                        <span class="flight-card__seats-left"></span>
+                                    </div>
+                                </header>
+
+                                <div class="flight-card__schedule">
+                                    <div class="flight-card__time">
+                                        <strong class="flight-card__depart-time"></strong>
+                                        <span class="flight-card__origin"></span>
+                                    </div>
+                                    <div class="flight-card__path">
+                                        <span class="flight-card__stops"></span>
+                                        <div class="flight-card__line">
+                                            <span class="flight-card__plane" aria-hidden="true">✈</span>
+                                        </div>
+                                        <span class="flight-card__duration"></span>
+                                    </div>
+                                    <div class="flight-card__time flight-card__time--arrive">
+                                        <strong class="flight-card__arrive-time"></strong>
+                                        <span class="flight-card__destination"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <aside class="flight-card__pricing">
+                                <select class="flight-card__class-select" aria-label="Chọn hạng ghế">
+                                    <option>Phổ thông</option>
+                                    <option>Phổ thông Đặc biệt</option>
+                                    <option>Thương gia</option>
+                                </select>
+                                <div class="flight-card__price-area">
+                                    <span class="flight-card__cheapest-badge" hidden>Rẻ nhất</span>
+                                    <strong class="flight-card__price"></strong>
+                                    <small class="flight-card__price-note">Đã bao gồm thuế phí</small>
+                                </div>
+                                <button type="button" class="flight-card__select-btn">
+                                    Chọn
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </button>
+                            </aside>
+                        </article>
+                    </template>
+
+                    <div id="flight-results-empty" class="flight-empty" hidden>
+                        <div class="flight-empty__icon" aria-hidden="true">🛫</div>
+                        <h3>Không tìm thấy chuyến bay phù hợp.</h3>
+                        <p>Vui lòng thử ngày bay khác, đổi bộ lọc, hoặc thay đổi điểm đi / điểm đến.</p>
+                    </div>
+
+                    <div id="flight-results-error" class="flight-error" hidden>
+                        <div class="flight-error__icon" aria-hidden="true">⚠️</div>
+                        <h3>Đã có lỗi xảy ra khi tìm chuyến bay.</h3>
+                        <p id="flight-results-error-message"></p>
+                        <button type="button" id="flight-retry-btn" class="flight-error__btn">Thử lại</button>
+                    </div>
+                </section>
+            </div>
         </div>
     </main>
 

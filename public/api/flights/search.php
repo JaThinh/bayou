@@ -158,12 +158,16 @@ if ($rapidApiKey !== '' && $originEntityId !== '' && $destinationEntityId !== ''
     }
 }
 
+// Tính dải 7 ngày liền kề (±3 ngày) để hiển thị date carousel với giá ước tính.
+$dateRange = buildDateRange($date, $origin, $destination);
+
 if (is_array($apiResult) && !empty($apiResult)) {
     echo json_encode([
         'success' => true,
         'source' => 'Skyscanner via RapidAPI',
         'attempts' => $attempts,
         'request' => $request,
+        'dateRange' => $dateRange,
         'flights' => $apiResult,
     ], JSON_UNESCAPED_UNICODE);
     exit;
@@ -184,6 +188,7 @@ echo json_encode([
         : 'Đang hiển thị dữ liệu mẫu do chưa cấu hình API thực tế.',
     'attempts' => $attempts,
     'request' => $request,
+    'dateRange' => $dateRange,
     'flights' => buildMockFlights($origin, $destination, $date),
 ], JSON_UNESCAPED_UNICODE);
 
@@ -381,6 +386,9 @@ function buildMockFlights(string $origin, string $destination, string $date): ar
             'ArriveHour' => '08:15',
             'Price' => 1850000,
             'Logo' => '/assets/logos/airline-vn.png',
+            'Aircraft' => 'Airbus A321',
+            'SeatsLeft' => 9,
+            'Amenities' => ['wifi', 'meal', 'usb'],
         ],
         [
             'AirlineName' => 'VietJet Air',
@@ -390,6 +398,9 @@ function buildMockFlights(string $origin, string $destination, string $date): ar
             'ArriveHour' => '10:45',
             'Price' => 1290000,
             'Logo' => '/assets/logos/airline-vj.png',
+            'Aircraft' => 'Airbus A320',
+            'SeatsLeft' => 22,
+            'Amenities' => ['usb'],
         ],
         [
             'AirlineName' => 'Bamboo Airways',
@@ -399,6 +410,9 @@ function buildMockFlights(string $origin, string $destination, string $date): ar
             'ArriveHour' => '13:30',
             'Price' => 1620000,
             'Logo' => '/assets/logos/airline-qh.png',
+            'Aircraft' => 'Airbus A321neo',
+            'SeatsLeft' => 5,
+            'Amenities' => ['wifi', 'meal', 'usb', 'entertainment'],
         ],
         [
             'AirlineName' => 'Vietravel Airlines',
@@ -408,6 +422,9 @@ function buildMockFlights(string $origin, string $destination, string $date): ar
             'ArriveHour' => '16:55',
             'Price' => 1490000,
             'Logo' => '/assets/logos/airline-vu.png',
+            'Aircraft' => 'Airbus A321',
+            'SeatsLeft' => 14,
+            'Amenities' => ['meal', 'usb'],
         ],
         [
             'AirlineName' => 'Vietnam Airlines',
@@ -417,6 +434,9 @@ function buildMockFlights(string $origin, string $destination, string $date): ar
             'ArriveHour' => '19:45',
             'Price' => 2120000,
             'Logo' => '/assets/logos/airline-vn.png',
+            'Aircraft' => 'Boeing 787-9',
+            'SeatsLeft' => 3,
+            'Amenities' => ['wifi', 'meal', 'usb', 'entertainment'],
         ],
         [
             'AirlineName' => 'VietJet Air',
@@ -426,6 +446,9 @@ function buildMockFlights(string $origin, string $destination, string $date): ar
             'ArriveHour' => '22:30',
             'Price' => 1390000,
             'Logo' => '/assets/logos/airline-vj.png',
+            'Aircraft' => 'Airbus A321',
+            'SeatsLeft' => 17,
+            'Amenities' => ['usb'],
         ],
     ];
 
@@ -444,8 +467,70 @@ function buildMockFlights(string $origin, string $destination, string $date): ar
             'Price' => $row['Price'],
             'PriceDisplay' => number_format($row['Price'], 0, ',', '.') . ' VND',
             'Logo' => $row['Logo'],
+            'Aircraft' => $row['Aircraft'],
+            'SeatsLeft' => $row['SeatsLeft'],
+            'Amenities' => $row['Amenities'],
         ];
     }
 
     return $flights;
+}
+
+/**
+ * Sinh dải 7 ngày (mặc định ±3 ngày quanh ngày tìm) kèm "giá thấp nhất ước tính"
+ * để frontend hiển thị date carousel — cho phép user nhanh chóng so sánh giá
+ * giữa các ngày liền kề và bấm chọn ngày khác để tìm lại.
+ *
+ * @return array<int, array{date: string, lowestPrice: int, displayPrice: string, dayLabel: string}>
+ */
+function buildDateRange(string $centerDate, string $origin, string $destination): array
+{
+    $center = DateTimeImmutable::createFromFormat('Y-m-d', $centerDate)
+        ?: new DateTimeImmutable($centerDate);
+
+    // Hash deterministic theo route+date để giá ổn định giữa các lần load.
+    $seed = crc32($origin . $destination . $centerDate);
+    mt_srand($seed);
+
+    $vietnameseWeekday = [
+        0 => 'CN',
+        1 => 'T2',
+        2 => 'T3',
+        3 => 'T4',
+        4 => 'T5',
+        5 => 'T6',
+        6 => 'T7',
+    ];
+
+    $range = [];
+    for ($offset = -3; $offset <= 3; $offset++) {
+        $day = $center->modify(($offset >= 0 ? '+' : '') . $offset . ' day');
+        // Giá biến thiên trong khoảng 1.05Tr ~ 2.5Tr, ngày tìm chính lấy giá thấp.
+        $base = $offset === 0 ? 1190000 : (1190000 + mt_rand(0, 1310000));
+        $base = (int) (round($base / 10000) * 10000);
+
+        $range[] = [
+            'date' => $day->format('Y-m-d'),
+            'dayLabel' => $vietnameseWeekday[(int) $day->format('w')],
+            'dayShort' => $day->format('d/m'),
+            'lowestPrice' => $base,
+            'displayPrice' => 'Từ ' . formatVndShort($base),
+            'isCenter' => $offset === 0,
+        ];
+    }
+
+    mt_srand(); // reset seed
+    return $range;
+}
+
+function formatVndShort(int $vnd): string
+{
+    if ($vnd >= 1000000) {
+        $value = $vnd / 1000000;
+        return rtrim(rtrim(number_format($value, 2, ',', '.'), '0'), ',') . 'Tr';
+    }
+    if ($vnd >= 1000) {
+        return number_format(round($vnd / 1000), 0, ',', '.') . 'K';
+    }
+    return number_format($vnd, 0, ',', '.');
 }
