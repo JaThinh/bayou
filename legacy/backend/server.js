@@ -54,9 +54,15 @@ app.get('/api/currency/rate', (req, res) => {
     });
 });
 
-const RAPIDAPI_KEY = '38ab0610a4msh9ca0345cabfdc62p189f00jsn011fbc7dfea2';
+// API key đọc từ biến môi trường, không hardcode trong source.
+// Thiết lập: export RAPIDAPI_KEY=... hoặc thêm vào file .env ở repo root.
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || process.env.SKYSCANNER_RAPIDAPI_KEY || '';
 const RAPIDAPI_HOST = 'skyscanner-flights-travel-api.p.rapidapi.com';
 const SKYSCANNER_SEARCH_URL = 'https://skyscanner-flights-travel-api.p.rapidapi.com/flights/searchFlights';
+
+if (!RAPIDAPI_KEY) {
+    console.warn('[Bayou] RAPIDAPI_KEY chưa được cấu hình — Skyscanner endpoint sẽ trả lỗi 503.');
+}
 
 const airportEntityMap = {
     SGN: '95673379',
@@ -158,6 +164,12 @@ const mapSkyscannerFlights = (json, origin, destination) => {
 };
 
 const fetchSkyscannerFlights = async (origin, destination, date) => {
+    if (!RAPIDAPI_KEY) {
+        const err = new Error('RAPIDAPI_KEY chưa được cấu hình trong môi trường server.');
+        err.statusCode = 503;
+        throw err;
+    }
+
     const originCode = String(origin || 'SGN').toUpperCase();
     const destinationCode = String(destination || 'HAN').toUpperCase();
     const isoDate = normalizeDate(date);
