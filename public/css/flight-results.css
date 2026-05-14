@@ -1,0 +1,446 @@
+/* ====================================================
+   FLIGHT RESULTS — Multi-Source Price Comparison UI
+   Glassmorphism + Premium Design
+   ==================================================== */
+
+/* ---- Container chính ---- */
+#flight-results-container {
+    margin: 32px auto 48px;
+    max-width: 1100px;
+    padding: 0 16px;
+    animation: fadeInUp 0.5s ease both;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Header kết quả ---- */
+.fr-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.fr-title {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.fr-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.fr-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.fr-badge.google    { background: #e8f0fe; color: #1a73e8; }
+.fr-badge.skyscanner{ background: #e6f3ff; color: #0770e3; }
+.fr-badge.ok        { opacity: 1; }
+.fr-badge.fail      { opacity: 0.5; text-decoration: line-through; }
+
+/* ---- Sort & filter bar ---- */
+.fr-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.fr-sort-btn {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1.5px solid #e0e0e0;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.fr-sort-btn:hover,
+.fr-sort-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: transparent;
+    color: #fff;
+}
+
+/* ---- Flight card ---- */
+.fr-card {
+    display: grid;
+    grid-template-columns: 160px 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(102,126,234,0.08);
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.fr-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, #667eea, #764ba2);
+    border-radius: 4px 0 0 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.fr-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(102,126,234,0.18);
+    border-color: rgba(102,126,234,0.4);
+}
+
+.fr-card:hover::before { opacity: 1; }
+
+/* Cheapest badge */
+.fr-card.cheapest::before { opacity: 1; background: linear-gradient(180deg, #11d06e, #0a9e50); }
+.fr-card .cheapest-label {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: linear-gradient(135deg, #11d06e, #0a9e50);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ---- Airline section ---- */
+.fr-airline {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.fr-airline-logo {
+    height: 32px;
+    width: 80px;
+    object-fit: contain;
+}
+
+.fr-airline-logo-fallback {
+    width: 48px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea22, #764ba222);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: #667eea;
+}
+
+.fr-airline-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.fr-flight-num {
+    font-size: 11px;
+    color: #888;
+}
+
+.fr-source-icon {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.fr-source-icon.google     { background: #e8f0fe; color: #1a73e8; }
+.fr-source-icon.skyscanner { background: #e6f3ff; color: #0770e3; }
+
+/* ---- Route/Time section ---- */
+.fr-route {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.fr-time-block { text-align: center; }
+
+.fr-time {
+    font-size: 24px;
+    font-weight: 800;
+    color: #222;
+    line-height: 1;
+}
+
+.fr-iata {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+}
+
+.fr-timeline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    min-width: 80px;
+}
+
+.fr-duration {
+    font-size: 11px;
+    color: #888;
+}
+
+.fr-line-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.fr-line {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(90deg, #667eea55, #764ba255);
+}
+
+.fr-plane-icon {
+    font-size: 15px;
+    color: #667eea;
+    margin: 0 2px;
+}
+
+.fr-stops {
+    font-size: 10px;
+    color: #888;
+}
+
+/* ---- Price section ---- */
+.fr-price-block {
+    text-align: right;
+    min-width: 130px;
+}
+
+.fr-price {
+    font-size: 22px;
+    font-weight: 800;
+    color: #e8500a;
+    line-height: 1;
+}
+
+.fr-price-note {
+    font-size: 10px;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+/* ---- CTA section ---- */
+.fr-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 110px;
+}
+
+.fr-btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s;
+    letter-spacing: 0.2px;
+}
+
+.fr-btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+}
+
+.fr-btn-primary:hover { 
+    transform: scale(1.04);
+    box-shadow: 0 4px 14px rgba(102,126,234,0.4);
+}
+
+.fr-btn-secondary {
+    background: #f4f4f4;
+    color: #555;
+    font-size: 11px;
+    padding: 7px 10px;
+}
+
+.fr-btn-secondary:hover { background: #eaeaea; }
+
+/* ---- Verification Panel ---- */
+.fr-verify-panel {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border: 1.5px solid rgba(102,126,234,0.2);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 20px 0;
+}
+
+.fr-verify-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #444;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fr-verify-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.fr-verify-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #eee;
+    transition: box-shadow 0.2s;
+}
+
+.fr-verify-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+.fr-verify-airline {
+    font-weight: 700;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.fr-fee-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    padding: 4px 0;
+    border-bottom: 1px dashed #f0f0f0;
+}
+
+.fr-fee-row:last-child { border-bottom: none; }
+
+.fr-fee-label { color: #888; }
+
+.fr-fee-value { font-weight: 600; color: #333; }
+
+.fr-verify-total {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 2px solid #f0f0f0;
+    font-size: 15px;
+}
+
+.fr-verify-total .fr-fee-value { color: #e8500a; font-size: 16px; }
+
+.fr-verify-note {
+    font-size: 10px;
+    color: #aaa;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.fr-verify-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    padding: 7px;
+    background: linear-gradient(135deg, #667eea22, #764ba222);
+    border-radius: 8px;
+    color: #667eea;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.fr-verify-link:hover { background: linear-gradient(135deg, #667eea33, #764ba233); }
+
+/* ---- Empty / Error ---- */
+.fr-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 16px;
+    border: 1.5px dashed #ddd;
+}
+
+.fr-empty-icon { font-size: 48px; margin-bottom: 12px; }
+.fr-empty-title { font-size: 18px; font-weight: 700; color: #555; margin: 0 0 8px; }
+.fr-empty-sub   { font-size: 14px; color: #aaa; }
+
+/* ---- Loading skeleton ---- */
+.fr-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-wave 1.5s infinite;
+    border-radius: 12px;
+    height: 80px;
+    margin-bottom: 12px;
+}
+
+@keyframes skeleton-wave {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .fr-card {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .fr-route {
+        grid-column: 1 / -1;
+    }
+
+    .fr-price-block { text-align: left; }
+    .fr-cta { flex-direction: row; }
+    .fr-time { font-size: 20px; }
+}

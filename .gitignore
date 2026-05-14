@@ -1,4 +1,29 @@
-node_modules/
+# Bayou Travel — Gitignore
+
+# ── Env & secrets ────────────────────────
 .env
+*.env.local
+
+# ── PHP ──────────────────────────────────
+vendor/
+composer.lock
+
+# ── Cache ────────────────────────────────
+storage/cache/*
+!storage/cache/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+
+# ── Legacy ───────────────────────────────
+legacy/
+
+# ── OS ───────────────────────────────────
 .DS_Store
-*.log
+Thumbs.db
+desktop.ini
+
+# ── IDE ──────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.user

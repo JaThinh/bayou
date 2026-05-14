@@ -1,4 +1,16 @@
 import { bindLocationInput, bindCalendarInput } from './popups.js';
+import { renderFlightResults } from './flightResults.js';
+
+// Inject CSS nếu chưa có
+(function injectFlightCSS() {
+    if (!document.getElementById('fr-css')) {
+        const link = document.createElement('link');
+        link.id   = 'fr-css';
+        link.rel  = 'stylesheet';
+        link.href = '/css/flight-results.css';
+        document.head.appendChild(link);
+    }
+})();
 
 export function initSearchWidget() {
     // Trip Tabs logic
@@ -340,12 +352,12 @@ export function initSearchWidget() {
     }
 
     // ==========================================
-    // API FETCH LOGIC
+    // API FETCH LOGIC — Multi-Source (Google + Skyscanner + Airline Verifier)
     // ==========================================
     const searchFlights = async (flightsArray) => {
+        const loader = document.getElementById('global-loader');
         try {
-            // Hiển thị loading
-            const loader = document.getElementById('global-loader');
+            // Hiển thị loading overlay
             if (loader) {
                 loader.style.display = 'flex';
                 loader.classList.remove('loader-overlay--hidden');
@@ -354,190 +366,82 @@ export function initSearchWidget() {
             // Lấy mã sân bay từ chuỗi (ví dụ "TP HCM (SGN)" -> "SGN")
             const extractCode = (str) => {
                 const match = str.match(/\(([^)]+)\)/);
-                return match ? match[1] : str;
+                return match ? match[1].trim().toUpperCase() : str.trim().toUpperCase();
             };
 
-            const getAirlineLogo = (code) => {
-                const normalizedCode = String(code || '').toLowerCase();
-                const logos = {
-                    vn: './assets/logos/airline-vn.png',
-                    vj: './assets/logos/airline-vj.png',
-                    qh: './assets/logos/airline-qh.png',
-                    vu: './assets/logos/airline-vu.png'
-                };
-
-                return logos[normalizedCode] || '';
+            // Chuyển DD/MM/YYYY → YYYY-MM-DD nếu cần
+            const normalizeDate = (dateStr) => {
+                const m = String(dateStr).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+                return m ? `${m[3]}-${m[2]}-${m[1]}` : dateStr;
             };
 
-            const allResults = [];
-
-            for (let i = 0; i < flightsArray.length; i++) {
-                const f = flightsArray[i];
+            // Gọi Multi-Source API song song cho tất cả chặng
+            const promises = flightsArray.map((f, i) => {
                 const originCode = extractCode(f.from);
-                const destCode = extractCode(f.to);
+                const destCode   = extractCode(f.to);
+                const dateStr    = normalizeDate(f.date || '');
 
-                const url = `http://localhost:5000/api/flights/search`;
-                console.log(`Đang gọi API Node.js Chuyến ${i + 1}: ${url}`);
-                
-                const response = await fetch(url, {
+                console.log(`✈ [Chặng ${i+1}] ${originCode} → ${destCode} | ${dateStr}`);
+
+                return fetch('/api/search_flights.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        from: originCode,
-                        to: destCode,
-                        departDate: f.date,
-                        tripType: 'oneway'
-                    }),
-                    mode: 'cors'
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Không thể tìm chuyến bay. Mã lỗi: ${response.status}`);
-                }
-
-                const resData = await response.json();
-                const formattedData = {
-                    status: resData.success ? 'success' : 'error',
-                    source: 'Bayou OTA System',
-                    request: {
-                        origin: originCode,
+                        origin:      originCode,
                         destination: destCode,
-                        date: f.date
-                    },
-                    data: (resData.data?.outbound || []).map(flight => ({
-                        AirlineName: flight.airline,
-                        AirlineCode: flight.airline_code,
-                        FlightNumber: flight.flight_number,
-                        SeatClass: currentSeatClass,
-                        DepartTime: new Date(flight.departure_time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-                        ArriveTime: new Date(flight.arrival_time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-                        TotalPrice: flight.price,
-                        PriceDisplay: flight.price_formatted || `${Number(flight.price || 0).toLocaleString('vi-VN')} ${flight.currency || ''}`.trim(),
-                        Logo: flight.airline_logo || getAirlineLogo(flight.airline_code)
-                    }))
+                        date:        dateStr,
+                        verify:      true,
+                    })
+                }).then(r => r.json()).catch(err => ({ success: false, error: err.message, data: [] }));
+            });
+
+            const results = await Promise.all(promises);
+
+            // Ẩn loading
+            if (loader) {
+                loader.classList.add('loader-overlay--hidden');
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+
+            // Merge kết quả nhiều chặng hoặc dùng thẳng nếu 1 chặng
+            const finalResult = results.length === 1
+                ? results[0]
+                : {
+                    success:       results.some(r => r.success),
+                    route:         flightsArray.map(f => `${f.from}→${f.to}`).join(' / '),
+                    date:          flightsArray[0]?.date || '',
+                    count:         results.reduce((s, r) => s + (r.count || 0), 0),
+                    data:          results.flatMap(r => r.data || []),
+                    verifications: Object.assign({}, ...results.map(r => r.verifications || {})),
+                    sources:       results[0]?.sources || {},
+                    errors:        results.flatMap(r => r.errors || []),
                 };
 
-                allResults.push(formattedData);
-            }
-            
-            // Xóa loading overlay
-            if (loader) {
-                loader.classList.add('loader-overlay--hidden');
-                setTimeout(() => loader.style.display = 'none', 500);
-            }
-            
-            // Hiển thị ra màn hình
-            renderFlightResults(allResults);
+            renderFlightResults(finalResult);
+
         } catch (error) {
-            console.error("Lỗi khi lấy dữ liệu vé:", error);
-            alert("Không thể tìm chuyến bay lúc này. Vui lòng thử lại sau.");
-            const loader = document.getElementById('global-loader');
+            console.error('❌ Lỗi tìm kiếm vé:', error);
             if (loader) {
                 loader.classList.add('loader-overlay--hidden');
                 setTimeout(() => loader.style.display = 'none', 500);
             }
-        }
-    };
-
-    // Hàm render giao diện vé máy bay
-    const renderFlightResults = (resultsArray) => {
-        let container = document.getElementById('flight-results-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'flight-results-container';
-            container.className = 'container';
-            container.style.marginTop = '40px';
-            container.style.marginBottom = '40px';
-            container.style.padding = '20px';
-            container.style.backgroundColor = '#fff';
-            container.style.borderRadius = '8px';
-            container.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-            
-            // Chèn ngay dưới khu vực search widget (Hero container)
-            const hero = document.getElementById('hero-container');
-            if(hero && hero.parentNode) {
-                hero.parentNode.insertBefore(container, hero.nextSibling);
+            // Hiện lỗi inline thay vì alert()
+            let container = document.getElementById('flight-results-container');
+            if (!container) {
+                container = document.createElement('section');
+                container.id = 'flight-results-container';
+                const hero = document.getElementById('hero-container');
+                if (hero?.parentNode) hero.parentNode.insertBefore(container, hero.nextSibling);
+                else document.body.appendChild(container);
             }
-        }
-        
-        let html = '';
-        
-        resultsArray.forEach((resData, index) => {
-            const titlePrefix = resultsArray.length > 1 ? `Chuyến ${index + 1}: ` : '';
-            const marginTop = index > 0 ? '40px' : '0';
-
-            if (resData.status === 'success' && resData.data && resData.data.length > 0) {
-                const title = `<h2 style="margin-bottom: 20px; color: #005bc5; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: ${marginTop};">
-                    ${titlePrefix}Kết quả tìm kiếm: ${resData.request.origin} ✈ ${resData.request.destination} 
-                    <span style="font-size: 14px; font-weight: normal; color: #888; margin-left: 10px;">(Ngày đi: ${resData.request.date} - Nguồn: ${resData.source})</span>
-                </h2>`;
-                
-                html += title + '<div style="display:flex; flex-direction:column; gap:15px;">';
-                resData.data.forEach(f => {
-                    const logoHtml = f.Logo
-                        ? `<img src="${f.Logo}" alt="${f.AirlineName}" style="width: 96px; height: 48px; object-fit: contain; display: block;">`
-                        : `<div style="width: 96px; height: 48px; border-radius: 10px; background: #eef4ff; color: #005bc5; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;">${f.AirlineCode || 'AIR'}</div>`;
-
-                    html += `
-                    <div class="flight-card" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 15px rgba(0,91,197,0.15)'; this.style.borderColor='#005bc5';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 5px rgba(0,0,0,0.05)'; this.style.borderColor='#ddd';">
-                        <div style="display: flex; align-items: center; gap: 15px; width: 30%;">
-                            <div style="width: 112px; min-width: 112px; display: flex; align-items: center; justify-content: center;">${logoHtml}</div>
-                            <div>
-                                <strong style="display: block; font-size: 16px; color: #333;">${f.AirlineName} (${f.AirlineCode})</strong>
-                                <span style="color: #666; font-size: 13px;">Chuyến bay: <b>${f.FlightNumber}</b> • Hạng: ${f.SeatClass}</span>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; align-items: center; justify-content: center; width: 40%; gap: 20px;">
-                            <div style="text-align: center;">
-                                <strong style="font-size: 22px; color: #333;">${f.DepartTime}</strong>
-                                <div style="color: #999; font-size: 12px; font-weight: bold;">${resData.request.origin}</div>
-                            </div>
-                            
-                            <div style="display: flex; flex-direction: column; align-items: center; width: 100px;">
-                                <span style="color: #888; font-size: 11px; margin-bottom: 2px;">Bay thẳng</span>
-                                <div style="width: 100%; height: 1px; background: #ccc; position: relative;">
-                                    <span style="position: absolute; right: -5px; top: -5px; color: #ccc;">✈</span>
-                                </div>
-                            </div>
-    
-                            <div style="text-align: center;">
-                                <strong style="font-size: 22px; color: #333;">${f.ArriveTime}</strong>
-                                <div style="color: #999; font-size: 12px; font-weight: bold;">${resData.request.destination}</div>
-                            </div>
-                        </div>
-    
-                        <div style="text-align: right; width: 30%;">
-                            <div style="font-size: 24px; font-weight: bold; color: #ff6b00;">${f.PriceDisplay || `${f.TotalPrice.toLocaleString('vi-VN')} VND`}</div>
-                            <div style="color: #888; font-size: 11px; margin-bottom: 8px;">Đã bao gồm thuế phí</div>
-                            <button class="btn-select-flight" data-flight='${JSON.stringify(f)}' style="background: #ff6b00; color: #fff; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: background 0.2s;" onmouseover="this.style.background='#e65c00'" onmouseout="this.style.background='#ff6b00'">Chọn Vé</button>
-                        </div>
-                    </div>`;
-                });
-                html += '</div>';
-                
-            } else {
-                html += `<div style="text-align:center; padding: 40px; margin-top: ${marginTop}; background: #fdfdfd; border-radius: 8px; border: 1px solid #eee;">
-                    <h2 style="color: #ff3333; margin-bottom: 10px;">${titlePrefix}Không tìm thấy chuyến bay phù hợp!</h2>
-                    <p style="color: #666;">Không có chuyến bay từ ${resData.request?.origin || 'điểm đi'} đến ${resData.request?.destination || 'điểm đến'}.</p>
+            container.innerHTML = `
+                <div class="fr-empty">
+                    <div class="fr-empty-icon">⚠️</div>
+                    <h3 class="fr-empty-title">Không tìm được vé</h3>
+                    <p class="fr-empty-sub">${error.message}</p>
                 </div>`;
-            }
-        });
-        
-        container.innerHTML = html;
-
-        // Cuộn xuống để xem kết quả
-        setTimeout(() => {
-            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-        
-        // Đăng ký sự kiện cho các nút "Chọn Vé"
-        document.querySelectorAll('.btn-select-flight').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const flightData = JSON.parse(e.target.dataset.flight);
-                openBookingModal(flightData);
-            });
-        });
+            setTimeout(() => container.scrollIntoView({ behavior: 'smooth' }), 100);
+        }
     };
 
     // Hàm mở Modal đặt vé

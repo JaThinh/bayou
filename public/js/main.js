@@ -1,47 +1,51 @@
 import { destinationsData, newsData, partnersData } from './data.js';
-import { loadComponent, renderCards, renderPartners, initHeader, initModals, initScrollToTop, initHeroSlider } from './ui.js';
+import { renderCards, renderPartners, initHeader, initModals, initScrollToTop, initHeroSlider } from './ui.js';
 import { initSearchWidget } from './searchWidget.js';
 import { initPopups } from './popups.js';
+import { initParticles, initParallax, initScrollReveal, initSmoothScroll, initRippleEffect, initCardTilt } from './particles.js';
 
-// =========================================
-// INIT APPLICATION
-// =========================================
 async function initApp() {
-    // 1. Tải tất cả HTML Components
-    await Promise.all([
-        loadComponent('header-container', './components/header/header.html'),
-        loadComponent('hero-container', './components/hero/hero.html'),
-        loadComponent('destinations-container', './components/destinations/destinations.html'),
-        loadComponent('news-container', './components/news/news.html'),
-        loadComponent('partners-container', './components/partners/partners.html'),
-        loadComponent('footer-container', './components/footer/footer.html'),
-        loadComponent('modals-container', './components/modals/modals.html')
-    ]);
+    // 1. Particles
+    initParticles();
 
-    // 2. Render Data Cards
+    // 2. Render dynamic data cards (no component loading needed — HTML inline)
     renderCards(destinationsData, 'destinations-grid');
     renderCards(newsData, 'news-grid');
     renderPartners();
 
-    // 3. Khởi tạo Logic UI
+    // 3. UI Logic
     initHeader();
     initModals();
     initScrollToTop();
-    
-    // 4. Khởi tạo Widget tìm kiếm và Popup
+
+    // 4. Search + Popups
     initSearchWidget();
     initPopups();
     initHeroSlider();
 
-    // 5. Ẩn hiệu ứng Loading (Giả lập delay)
+    // 5. Effects
+    initParallax();
+    initSmoothScroll();
+    initRippleEffect();
+
+    // 6. Animations after paint
+    setTimeout(() => {
+        initScrollReveal();
+        initCardTilt();
+    }, 500);
+
+    // 7. Hide loader
     setTimeout(() => {
         const loader = document.getElementById('global-loader');
         if (loader) {
             loader.classList.add('loader-overlay--hidden');
-            setTimeout(() => loader.style.display = 'none', 500);
+            setTimeout(() => {
+                loader.style.display = 'none';
+                const app = document.getElementById('app');
+                if (app) app.style.animation = 'fadeIn 0.8s ease-in-out';
+            }, 500);
         }
-    }, 800);
+    }, 1200);
 }
 
-// Chạy ứng dụng
 initApp();

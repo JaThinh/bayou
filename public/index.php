@@ -1,16 +1,13 @@
 <?php
 /**
- * BAYOU OTA - Front Controller
+ * BAYOU — Front Controller
+ * Phục vụ index.html tĩnh. PHP chỉ dùng cho API (/api/search_flights.php).
  */
-session_start();
-
-// Thiết lập Error Reporting cho môi trường Development
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Load Database config (optional cho sau này)
-require_once __DIR__ . '/../app/Core/Database.php';
-
-// Route đơn giản: Load trang chủ
-require_once __DIR__ . '/../resources/views/frontend/home.php';
+$htmlFile = __DIR__ . '/index.html';
+if (file_exists($htmlFile)) {
+    header('Content-Type: text/html; charset=UTF-8');
+    readfile($htmlFile);
+} else {
+    http_response_code(404);
+    echo 'index.html not found';
+}

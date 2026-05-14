@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đường bay đẹp & giá tốt | Bayou Travel</title>
+<meta name="description" content="Tìm kiếm và đặt vé máy bay giá tốt nhất với Bayou Travel.">
+<link rel="icon" href="/assets/logos/favicon.png.png" type="image/png">
+<link rel="stylesheet" href="/css/modern-effects.css">
+<link rel="stylesheet" href="/css/effects-addon.css">
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/flight-results.css">
+<link rel="stylesheet" href="/components/header/header.css">
+<link rel="stylesheet" href="/components/hero/hero.css">
+<link rel="stylesheet" href="/components/destinations/destinations.css">
+<link rel="stylesheet" href="/components/partners/partners.css">
+<link rel="stylesheet" href="/components/footer/footer.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ── LOADING OVERLAY ────────────────────────────────── -->
+<div id="global-loader" class="loader-overlay">
+  <img src="/assets/logos/cloud.png" alt="" class="flying-cloud cloud-1">
+  <img src="/assets/logos/cloud.png" alt="" class="flying-cloud cloud-2">
+  <img src="/assets/logos/cloud.png" alt="" class="flying-cloud cloud-3">
+  <div class="flight-loader">
+    <div class="earth-container">
+      <img src="/assets/logos/earth.png" alt="Earth" class="earth-svg">
+    </div>
+    <div class="orbit">
+      <div class="plane">
+        <img src="/assets/logos/plane.png" alt="Plane" style="width:24px;height:24px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- ── HEADER ──────────────────────────────────────── -->
+  <div id="header-container">
+    <header class="header">
+      <div class="header__left">
+        <img src="/assets/logos/bayou_logo.png" alt="Bayou Travel" class="header__logo">
+      </div>
+      <div class="header__right">
+        <div class="lang-selector">
+          <button class="lang-selector__btn" id="btn-lang">
+            <span id="current-lang-text">VN</span>
+          </button>
+          <div class="lang-selector__dropdown" id="lang-dropdown">
+            <div class="lang-selector__title">Ngôn ngữ</div>
+            <div class="lang-selector__option">
+              <img src="https://flagcdn.com/w20/us.png" alt="EN" class="lang-selector__flag"> English <span class="lang-selector__check">✔</span>
+            </div>
+            <div class="lang-selector__option lang-selector__option--active">
+              <img src="https://flagcdn.com/w20/vn.png" alt="VN" class="lang-selector__flag"> Tiếng Việt <span class="lang-selector__check">✔</span>
+            </div>
+          </div>
+        </div>
+        <button class="header__btn header__btn--exchange" id="btn-exchange">Tỷ giá: Đang cập nhật...</button>
+        <button class="header__btn header__btn--booking" id="btn-booking">Tìm kiếm đặt chỗ</button>
+        <button class="header__btn header__btn--login" id="btn-login">👤 Đăng nhập</button>
+      </div>
+    </header>
+  </div>
+
+  <!-- ── HERO + SEARCH WIDGET ────────────────────────── -->
+  <div id="hero-container">
+    <section class="hero">
+      <div class="hero-slider">
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=90&auto=format');"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1920&q=90&auto=format');"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1920&q=90&auto=format');"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1528127269322-539801943592?w=1920&q=90&auto=format');"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1920&q=90&auto=format');"></div>
+      </div>
+      <div class="slider-dots"></div>
+
+      <div class="search-widget">
+        <div class="search-widget__row search-widget__row--top">
+          <div class="search-widget__tabs">
+            <button class="search-widget__tab search-widget__tab--active" data-trip="roundtrip">Khứ hồi</button>
+            <button class="search-widget__tab" data-trip="oneway">1 chiều</button>
+            <button class="search-widget__tab" data-trip="multicity">Đa chặng</button>
+          </div>
+          <div class="search-widget__options">
+            <div class="custom-dropdown" id="dropdown-seat">
+              <button type="button" class="custom-dropdown__toggle" id="btn-seat">💺 Phổ thông <span class="arrow">▼</span></button>
+              <div class="custom-dropdown__menu" id="menu-seat">
+                <div class="custom-dropdown__item">Tất cả hạng ghế</div>
+                <div class="custom-dropdown__item custom-dropdown__item--active">Phổ thông <span class="dot"></span></div>
+                <div class="custom-dropdown__item">Phổ thông đặc biệt</div>
+                <div class="custom-dropdown__item">Thương gia</div>
+                <div class="custom-dropdown__item">Hạng nhất</div>
+              </div>
+            </div>
+            <div class="custom-dropdown" id="dropdown-passenger">
+              <button type="button" class="custom-dropdown__toggle" id="btn-passenger">👥 1 Hành khách <span class="arrow">▼</span></button>
+              <div class="custom-dropdown__menu custom-dropdown__menu--passenger" id="menu-passenger">
+                <div class="passenger-row">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <div class="passenger-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005bc5" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                    <div class="passenger-info"><strong>Người lớn</strong><span>(từ 12 tuổi)</span></div>
+                  </div>
+                  <div class="passenger-controls">
+                    <button type="button" class="passenger-btn minus" data-type="adult">-</button>
+                    <span class="passenger-count" id="count-adult">1</span>
+                    <button type="button" class="passenger-btn plus" data-type="adult">+</button>
+                  </div>
+                </div>
+                <div class="passenger-row">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <div class="passenger-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005bc5" stroke-width="2"><path d="M18 21v-2a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v2"/><circle cx="12" cy="9" r="3"/></svg></div>
+                    <div class="passenger-info"><strong>Trẻ em</strong><span>(2-12 tuổi)</span></div>
+                  </div>
+                  <div class="passenger-controls">
+                    <button type="button" class="passenger-btn minus" data-type="child">-</button>
+                    <span class="passenger-count" id="count-child">0</span>
+                    <button type="button" class="passenger-btn plus" data-type="child">+</button>
+                  </div>
+                </div>
+                <div class="passenger-row">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <div class="passenger-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#005bc5" stroke-width="2"><circle cx="9" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M5 19h14"/><path d="M3 11a8 8 0 0 1 16 0v5H3v-5z"/></svg></div>
+                    <div class="passenger-info"><strong>Trẻ sơ sinh</strong><span>(Dưới 2 tuổi)</span></div>
+                  </div>
+                  <div class="passenger-controls">
+                    <button type="button" class="passenger-btn minus" data-type="infant">-</button>
+                    <span class="passenger-count" id="count-infant">0</span>
+                    <button type="button" class="passenger-btn plus" data-type="infant">+</button>
+                  </div>
+                </div>
+                <div class="passenger-action">
+                  <button type="button" class="btn-confirm-passenger" id="btn-passenger-confirm">Đồng ý</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Form -->
+        <form class="search-widget__form" id="flight-search-form">
+          <div class="search-widget__input-group" style="position:relative;">
+            <label class="search-widget__label">Điểm đi</label>
+            <input type="text" class="search-widget__input" id="input-from" placeholder="Thành phố hoặc sân bay" autocomplete="off">
+            <div class="location-popup" id="popup-from">
+              <div class="location-popup__tabs">
+                <button type="button" class="location-popup__tab location-popup__tab--active">NỘI ĐỊA</button>
+                <button type="button" class="location-popup__tab">MỸ - CANADA</button>
+                <button type="button" class="location-popup__tab">CHÂU ÂU</button>
+                <button type="button" class="location-popup__tab">CHÂU ÚC</button>
+                <button type="button" class="location-popup__tab">CHÂU Á</button>
+              </div>
+              <div class="location-popup__content"></div>
+            </div>
+          </div>
+          <button type="button" class="search-widget__swap-btn" id="btn-swap">⇄</button>
+          <div class="search-widget__input-group" style="position:relative;">
+            <label class="search-widget__label">Điểm đến</label>
+            <input type="text" class="search-widget__input" id="input-to" placeholder="Thành phố hoặc sân bay" autocomplete="off">
+            <div class="location-popup" id="popup-to">
+              <div class="location-popup__tabs">
+                <button type="button" class="location-popup__tab location-popup__tab--active">NỘI ĐỊA</button>
+                <button type="button" class="location-popup__tab">MỸ - CANADA</button>
+                <button type="button" class="location-popup__tab">CHÂU ÂU</button>
+                <button type="button" class="location-popup__tab">CHÂU ÚC</button>
+                <button type="button" class="location-popup__tab">CHÂU Á</button>
+              </div>
+              <div class="location-popup__content"></div>
+            </div>
+          </div>
+          <div class="search-widget__input-group" style="position:relative;">
+            <label class="search-widget__label">Ngày đi</label>
+            <input type="text" class="search-widget__input" id="input-depart" placeholder="dd/mm/yyyy" readonly autocomplete="off" style="cursor:pointer;">
+            <div class="custom-calendar-popup" id="calendar-popup">
+              <div class="calendar-wrapper">
+                <div class="calendar-month" id="calendar-left"></div>
+                <div class="calendar-month" id="calendar-right"></div>
+              </div>
+              <div class="calendar-footer">
+                <button type="button" class="btn-confirm-calendar" id="btn-calendar-confirm">Đồng ý</button>
+              </div>
+            </div>
+          </div>
+          <div class="search-widget__input-group" id="return-date-group">
+            <label class="search-widget__label">Ngày về</label>
+            <input type="text" class="search-widget__input" id="input-return" placeholder="dd/mm/yyyy" readonly autocomplete="off" style="cursor:pointer;">
+          </div>
+          <button type="submit" class="search-widget__submit-btn">🔍</button>
+        </form>
+
+        <!-- Multi-city Form -->
+        <form class="search-widget__multicity" id="multicity-form" style="display:none;">
+          <div class="multicity-flight">
+            <div class="multicity-flight-header">CHUYẾN BAY 1</div>
+            <div class="multicity-row">
+              <div class="search-widget__input-group" style="position:relative;"><label class="search-widget__label">Điểm đi</label><input type="text" class="search-widget__input m-from" placeholder="Thành phố hoặc sân bay" autocomplete="off"></div>
+              <button type="button" class="search-widget__swap-btn m-swap">⇄</button>
+              <div class="search-widget__input-group" style="position:relative;"><label class="search-widget__label">Điểm đến</label><input type="text" class="search-widget__input m-to" placeholder="Thành phố hoặc sân bay" autocomplete="off"></div>
+              <div class="search-widget__input-group multicity-date-group" style="position:relative;"><label class="search-widget__label">Ngày đi</label><input type="text" class="search-widget__input m-date" placeholder="dd/mm/yyyy" readonly autocomplete="off" style="cursor:pointer;"></div>
+              <button type="button" class="btn-remove-flight" style="visibility:hidden;padding:0 15px;"></button>
+            </div>
+          </div>
+          <div class="multicity-flight" style="margin-top:15px;">
+            <div class="multicity-flight-header">CHUYẾN BAY 2</div>
+            <div class="multicity-row">
+              <div class="search-widget__input-group" style="position:relative;"><label class="search-widget__label">Điểm đi</label><input type="text" class="search-widget__input m-from" placeholder="Thành phố hoặc sân bay" autocomplete="off"></div>
+              <button type="button" class="search-widget__swap-btn m-swap">⇄</button>
+              <div class="search-widget__input-group" style="position:relative;"><label class="search-widget__label">Điểm đến</label><input type="text" class="search-widget__input m-to" placeholder="Thành phố hoặc sân bay" autocomplete="off"></div>
+              <div class="search-widget__input-group multicity-date-group" style="position:relative;"><label class="search-widget__label">Ngày đi</label><input type="text" class="search-widget__input m-date" placeholder="dd/mm/yyyy" readonly autocomplete="off" style="cursor:pointer;"></div>
+              <button type="button" class="btn-remove-flight" style="visibility:hidden;padding:0 15px;"></button>
+            </div>
+          </div>
+          <div class="multicity-actions">
+            <button type="button" class="btn-add-flight" style="background:transparent;color:#00aaff;border:none;font-weight:bold;cursor:pointer;font-size:14px;">+ Thêm chuyến bay</button>
+            <button type="submit" class="btn-confirm-passenger" style="width:150px;">Tìm chuyến bay</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="hero__contact">
+        <img src="/assets/logos/0_1.png" alt="Bayou Contact" class="hero__contact-img">
+      </div>
+    </section>
+  </div>
+
+  <!-- ── FLIGHT RESULTS (rendered by JS) ─────────────── -->
+  <div id="flight-results-container"></div>
+
+  <!-- ── DESTINATIONS ────────────────────────────────── -->
+  <div id="destinations-container">
+    <section class="destinations">
+      <div class="container">
+        <h2 class="section-title" data-i18n="dest_title">Điểm đến nổi bật</h2>
+        <div class="article-grid" id="destinations-grid"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ── NEWS ────────────────────────────────────────── -->
+  <div id="news-container">
+    <section class="news">
+      <div class="container">
+        <h2 class="section-title" data-i18n="news_title">Tin tức & Ưu đãi</h2>
+        <div class="article-grid" id="news-grid"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ── PARTNERS ─────────────────────────────────────── -->
+  <div id="partners-container">
+    <section class="partners">
+      <div class="container">
+        <h2 class="section-title" data-i18n="partners_title">Hãng hàng không đối tác</h2>
+        <div class="partners-track-wrapper">
+          <div class="partners-track" id="partners-grid"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ── FOOTER ───────────────────────────────────────── -->
+  <div id="footer-container">
+    <div class="connect-banner-wrapper">
+      <div class="connect-banner">
+        <img src="/assets/logos/connect_bayou.png" alt="Kết nối cùng Bayou" class="connect-banner__img">
+      </div>
+    </div>
+    <footer class="site-footer">
+      <div class="container">
+        <div class="site-footer__top">
+          <div class="site-footer__info">
+            <h3 class="site-footer__company-name" data-i18n="footer_company">CÔNG TY TNHH BAYOU</h3>
+            <div class="site-footer__details">
+              <p data-i18n="footer_license">Giấy chứng nhận đăng ký kinh doanh số 0315086120 — Sở KH&ĐT TP HCM</p>
+              <p data-i18n="footer_address">Trụ sở: 121 Đinh Tiên Hoàng, P.Tân Định, TP.HCM, Việt Nam</p>
+              <p>Email: <a href="mailto:Bayou02@phongvebayou.com" class="contact-link">Bayou02@phongvebayou.com</a></p>
+              <p><a href="tel:0933115768" class="contact-link">093 311 5768</a> (Mr Trường) &nbsp;|&nbsp; <a href="tel:0966899767" class="contact-link">096 689 9767</a> (Ms Thúy)</p>
+            </div>
+            <div class="site-footer__links" style="margin-top:20px;">
+              <a href="https://bayouticket.com/payment-policy" target="_blank">Chính sách thanh toán</a>
+              <a href="https://bayouticket.com/delivery-policy" target="_blank">Chính sách giao nhận</a>
+              <a href="https://bayouticket.com/return-refund-policy" target="_blank">Đổi trả / hoàn tiền</a>
+              <a href="https://bayouticket.com/information-security-policy" target="_blank">Bảo mật thông tin</a>
+            </div>
+          </div>
+          <div class="site-footer__map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.297448834919!2d106.69741751480093!3d10.788514992313337!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f354f02a7b1%3A0xc3f8e001859944d1!2zMTIxIMSQaW5oIFRpw6puIEhvw6BuZywgxJBhIEthbywgUXXhuq1uIDEsIFRow6BuaCBwaOG7kSBI4buTIENow60gTWluaCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1699999999999!5m2!1svi!2s" allowfullscreen="" loading="lazy"></iframe>
+          </div>
+        </div>
+        <div class="site-footer__banks">
+          <h3 class="site-footer__banks-title">TÀI KHOẢN NGÂN HÀNG</h3>
+          <div class="site-footer__banks-grid">
+            <div class="bank-item-text">MB Bank — CN Bắc Sài Gòn<br>CÔNG TY TNHH BAYOU<br>STK: 1372797979</div>
+            <div class="bank-item-text">Vietcombank — CN Sài Gòn<br>CÔNG TY TNHH BAYOU<br>STK: 0331000492021</div>
+            <div class="bank-item-text">ACB — CN Tân Định<br>CÔNG TY TNHH BAYOU<br>STK: 695307</div>
+            <div class="bank-item-text">Sacombank — CN Sài Gòn<br>CÔNG TY TNHH BAYOU<br>STK: 060182561854</div>
+          </div>
+        </div>
+      </div>
+      <div class="site-footer__bottom">
+        <div class="container site-footer__bottom-container">
+          <div class="site-footer__bottom-left">Thiết kế &amp; phát triển bởi leap.vn</div>
+          <div class="site-footer__bottom-center">© 2024 BAYOU</div>
+          <div class="site-footer__bottom-right">
+            <a href="https://zalo.me/0966899767" target="_blank" class="social-icon social-icon--zalo" title="Zalo">Z</a>
+            <a href="https://m.me/bayouticket" target="_blank" class="social-icon social-icon--mess" title="Messenger">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.907 1.45 5.497 3.72 7.19V22l3.405-1.868c.91.252 1.87.388 2.875.388 5.523 0 10-4.145 10-9.243S17.523 2 12 2zm1.093 12.457l-2.547-2.72-4.97 2.72 5.467-5.8 2.61 2.72 4.906-2.72-5.466 5.8z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <div class="floating-widgets">
+      <button class="widget-btn widget-btn--promo">🎫 Vé giá tốt</button>
+      <a href="https://zalo.me/0966899767" target="_blank" class="widget-btn widget-btn--zalo" title="Zalo">Zalo</a>
+      <a href="https://m.me/bayouticket" target="_blank" class="widget-btn widget-btn--mess" title="Messenger">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.907 1.45 5.497 3.72 7.19V22l3.405-1.868c.91.252 1.87.388 2.875.388 5.523 0 10-4.145 10-9.243S17.523 2 12 2zm1.093 12.457l-2.547-2.72-4.97 2.72 5.467-5.8 2.61 2.72 4.906-2.72-5.466 5.8z"/></svg>
+      </a>
+      <a href="tel:0966899767" class="widget-btn widget-btn--phone" title="Hotline">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.57.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1.02l-2.2 2.2z"/></svg>
+      </a>
+      <button id="btn-scroll-top" class="widget-btn widget-btn--scrolltop" style="display:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0099ff" stroke-width="2.5"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── MODALS ────────────────────────────────────────── -->
+  <div id="modals-container">
+    <div class="modal" id="booking-modal">
+      <div class="modal__dialog">
+        <div class="modal__header">
+          <h3 class="modal__title">Tìm kiếm chi tiết đặt chỗ</h3>
+          <button class="modal__close-btn" id="booking-modal-close">✕</button>
+        </div>
+        <div class="modal__body">
+          <div class="modal__input-row">
+            <div class="modal__icon">🎫</div>
+            <input type="text" class="modal__input" id="booking-code" placeholder="Nhập mã Booking">
+          </div>
+          <div class="modal__input-row">
+            <div class="modal__icon">+84</div>
+            <input type="tel" class="modal__input" id="booking-phone" placeholder="(982837841)">
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button class="modal__submit-btn" id="booking-submit">Tìm Kiếm 🔍</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<script src="/js/main.js" type="module"></script>
+</body>
+</html>
